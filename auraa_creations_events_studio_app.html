@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#09090b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Auraa Studio" />
+  <title>AURAA CREATIONS & EVENTS | Studio App</title>
+
+  <!-- Inline Web App Manifest for PWA Home Screen Installation -->
+  <link rel="manifest" href='data:application/manifest+json,{
+    "name": "AURAA CREATIONS & EVENTS",
+    "short_name": "Auraa Studio",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#09090b",
+    "theme_color": "#d4af37",
+    "description": "Photography, Events & Bridal Studio Portal - Southgate, Madurai"
+  }' />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Inter & Cinzel for Luxury Studio Branding -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Cinzel', 'serif'],
+          },
+          colors: {
+            gold: {
+              300: '#f3e5ab',
+              400: '#e6c65a',
+              500: '#d4af37',
+              600: '#b59224',
+              700: '#8c6f16',
+            },
+            obsidian: {
+              950: '#09090b',
+              900: '#121216',
+              800: '#1c1c22',
+              700: '#272730',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Custom Scrollbar & Smooth Touch Utilities */
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      background-color: #09090b;
+      color: #f4f4f5;
+      overflow-x: hidden;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #e6c65a 0%, #d4af37 50%, #aa851c 100%);
+    }
+    .gold-border-glow {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.12);
+    }
+
+    /* Print Styles for Clean Studio Invoice PDF */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printable-invoice-area, #printable-invoice-area * {
+        visibility: visible;
+      }
+      #printable-invoice-area {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #ffffff !important;
+        color: #111827 !important;
+        padding: 24px !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-gold-500 selection:text-black">
+
+  <!-- Top Sticky App Header & Mode Switcher -->
+  <header class="sticky top-0 z-40 bg-obsidian-950/90 backdrop-blur-md border-b border-zinc-800/80 px-4 py-3 no-print">
+    <div class="max-w-xl mx-auto flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl gold-gradient flex items-center justify-center text-obsidian-950 font-display font-extrabold text-lg shadow-md">
+          A
+        </div>
+        <div>
+          <h1 class="font-display font-bold text-sm sm:text-base tracking-wide text-gold-400 leading-tight">
+            AURAA CREATIONS
+          </h1>
+          <p class="text-[11px] text-zinc-400 tracking-wider uppercase">& Events • Madurai</p>
+        </div>
+      </div>
+
+      <!-- Mode Toggle Pill: Client vs Admin -->
+      <div class="flex items-center bg-obsidian-800 p-1 rounded-full border border-zinc-700/70">
+        <button id="btn-mode-client" onclick="switchAppMode('client')"
+          class="px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-gold-500 text-obsidian-950 shadow">
+          Client
+        </button>
+        <button id="btn-mode-admin" onclick="requestAdminAccess()"
+          class="px-3 py-1.5 rounded-full text-xs font-semibold transition-all text-zinc-300 hover:text-white flex items-center gap-1">
+          <i data-lucide="lock" class="w-3 h-3" id="admin-lock-icon"></i>
+          Admin
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 w-full max-w-xl mx-auto pb-24">
+
+    <!-- ========================================================= -->
+    <!-- 1. CLIENT PORTAL VIEW                                     -->
+    <!-- ========================================================= -->
+    <div id="view-client" class="space-y-6 px-4 pt-4">
+
+      <!-- Hero Studio Banner -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-obsidian-800 via-obsidian-900 to-obsidian-950 border border-gold-500/30 p-5 gold-border-glow">
+        <div class="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-gold-500/10 blur-2xl pointer-events-none"></div>
+        <div class="relative z-10">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-400 text-[11px] font-medium mb-3">
+            <i data-lucide="map-pin" class="w-3 h-3"></i>
+            Southgate, Madurai - 625001
+          </div>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-white leading-snug">
+            AURAA CREATIONS <span class="text-gold-400">& EVENTS</span>
+          </h2>
+          <p class="text-zinc-300 text-xs sm:text-sm mt-1.5 leading-relaxed">
+            Capturing timeless wedding stories, bespoke bridal Aari artistry, and unforgettable celebrations across Madurai.
+          </p>
+
+          <!-- Quick Contact Action Buttons -->
+          <div class="grid grid-cols-3 gap-2.5 mt-5">
+            <a href="tel:+917449288649"
+              class="flex flex-col items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-obsidian-800/90 hover:bg-obsidian-700 border border-zinc-700/80 transition active:scale-95">
+              <i data-lucide="phone-call" class="w-4 h-4 text-gold-400"></i>
+              <span class="text-[11px] font-medium text-zinc-200">Call Now</span>
+            </a>
+            <a href="https://wa.me/917449288649?text=Hi%20Auraa%20Creations%20%26%20Events!%20I%20would%20like%20to%20enquire%20about%20your%20services." target="_blank" rel="noopener"
+              class="flex flex-col items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-700/50 transition active:scale-95">
+              <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400"></i>
+              <span class="text-[11px] font-medium text-emerald-200">WhatsApp</span>
+            </a>
+            <a href="https://instagram.com/auraa_creations_by_aishu" target="_blank" rel="noopener"
+              class="flex flex-col items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-pink-950/50 hover:bg-pink-900/50 border border-pink-700/40 transition active:scale-95">
+              <i data-lucide="instagram" class="w-4 h-4 text-pink-400"></i>
+              <span class="text-[11px] font-medium text-pink-200">Instagram</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Client Sub-Section: Services & Packages -->
+      <section id="section-services" class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-display text-base font-bold text-gold-400 tracking-wide">Services & Packages</h3>
+          <span class="text-[11px] text-zinc-400">Custom quotes available</span>
+        </div>
+
+        <!-- Horizontal Category Filter Pills -->
+        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1" id="category-tabs">
+          <button onclick="filterPackages('All')" data-cat="All"
+            class="cat-pill shrink-0 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gold-500 text-obsidian-950 transition">
+            All
+          </button>
+          <button onclick="filterPackages('Wedding & Candid')" data-cat="Wedding & Candid"
+            class="cat-pill shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium bg-obsidian-800 text-zinc-300 border border-zinc-700/70 transition">
+            Wedding & Candid
+          </button>
+          <button onclick="filterPackages('Events & Decor')" data-cat="Events & Decor"
+            class="cat-pill shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium bg-obsidian-800 text-zinc-300 border border-zinc-700/70 transition">
+            Events & Decor
+          </button>
+          <button onclick="filterPackages('Baby & Outdoor Shoot')" data-cat="Baby & Outdoor Shoot"
+            class="cat-pill shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium bg-obsidian-800 text-zinc-300 border border-zinc-700/70 transition">
+            Baby & Outdoor Shoot
+          </button>
+          <button onclick="filterPackages('Aari & Bridal Works')" data-cat="Aari & Bridal Works"
+            class="cat-pill shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium bg-obsidian-800 text-zinc-300 border border-zinc-700/70 transition">
+            Aari & Bridal Works
+          </button>
+        </div>
+
+        <!-- Service Cards List -->
+        <div id="packages-container" class="grid grid-cols-1 gap-3.5">
+          <!-- Populated dynamically via JavaScript -->
+        </div>
+      </section>
+
+      <!-- Client Sub-Section: Direct Booking Form -->
+      <section id="section-booking" class="rounded-3xl bg-obsidian-900 border border-zinc-800 p-5 space-y-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-gold-400">
+            <i data-lucide="calendar-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-base font-bold text-white">Book Your Date</h3>
+            <p class="text-xs text-zinc-400">Instant confirmation via WhatsApp</p>
+          </div>
+        </div>
+
+        <form id="client-booking-form" onsubmit="handleClientBooking(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-medium text-zinc-300 mb-1">Your Name *</label>
+            <input type="text" id="book-name" required placeholder="e.g. Karthik & Priya"
+              class="w-full rounded-xl bg-obsidian-950 border border-zinc-700/80 px-3.5 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-gold-500" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-zinc-300 mb-1">Phone / WhatsApp Number *</label>
+              <input type="tel" id="book-phone" required placeholder="e.g. 9876543210"
+                class="w-full rounded-xl bg-obsidian-950 border border-zinc-700/80 px-3.5 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-gold-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-zinc-300 mb-1">Event / Delivery Date *</label>
+              <input type="date" id="book-date" required
+                class="w-full rounded-xl bg-obsidian-950 border border-zinc-700/80 px-3.5 py-3 text-sm text-white focus:outline-none focus:border-gold-500" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-zinc-300 mb-1">Service / Package *</label>
+            <select id="book-service" required
+              class="w-full rounded-xl bg-obsidian-950 border border-zinc-700/80 px-3.5 py-3 text-sm text-white focus:outline-none focus:border-gold-500">
+              <option value="Wedding & Candid Photography">Wedding & Candid Photography</option>
+              <option value="Engagement & Reception Coverage">Engagement & Reception Coverage</option>
+              <option value="Events & Stage Decor">Events & Stage Decor</option>
+              <option value="Baby & Outdoor Portrait Shoot">Baby & Outdoor Portrait Shoot</option>
+              <option value="Bridal Aari Blouse & Maggam Work">Bridal Aari Blouse & Maggam Work</option>
+              <option value="Custom Combo Package">Custom Combo Package</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-zinc-300 mb-1">Venue / Location *</label>
+            <input type="text" id="book-location" required placeholder="e.g. Tamukkam Ground / Madurai"
+              class="w-full rounded-xl bg-obsidian-950 border border-zinc-700/80 px-3.5 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-gold-500" />
+          </div>
+
+          <button type="submit"
+            class="w-full py-3.5 px-4 rounded-2xl gold-gradient text-obsidian-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg hover:brightness-105 active:scale-[0.98] transition">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            Book via WhatsApp
+          </button>
+        </form>
+      </section>
+
+      <!-- Studio Footer Info -->
+      <footer class="rounded-2xl bg-obsidian-900/60 border border-zinc-800/70 p-4 text-center space-y-1.5 text-xs text-zinc-400">
+        <p class="font-display font-bold text-gold-400 text-sm">AURAA CREATIONS & EVENTS</p>
+        <p>Southgate, Madurai - 625001, Tamil Nadu</p>
+        <p>Ph: +91 74492 88649 • @auraa_creations_by_aishu</p>
+        <p class="text-[11px] text-zinc-500">auraa.creations2407@gmail.com</p>
+      </footer>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 2. ADMIN STUDIO MANAGER VIEW (PIN PROTECTED)              -->
+    <!-- ========================================================= -->
+    <div id="view-admin" class="hidden space-y-5 px-4 pt-4">
+
+      <!-- Admin Top Bar -->
+      <div class="flex items-center justify-between bg-obsidian-900 border border-gold-500/30 rounded-2xl px-4 py-3 no-print">
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-gold-400 font-semibold">Studio Manager</span>
+          <h2 class="font-display text-base font-bold text-white">Auraa Admin Console</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openNewOrderModal()"
+            class="px-3 py-2 rounded-xl gold-gradient text-obsidian-950 font-bold text-xs flex items-center gap-1 shadow active:scale-95">
+            <i data-lucide="plus" class="w-4 h-4"></i> New Order
+          </button>
+          <button onclick="lockAdminMode()" title="Lock Admin"
+            class="p-2 rounded-xl bg-obsidian-800 text-zinc-300 hover:text-red-400 border border-zinc-700">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashboard Summary Cards -->
+      <div class="grid grid-cols-3 gap-2.5 no-print">
+        <div class="rounded-2xl bg-obsidian-900 border border-zinc-800 p-3.5">
+          <p class="text-[11px] text-zinc-400">Total Bookings</p>
+          <p id="stat-total-bookings" class="text-xl font-bold text-white mt-1">0</p>
+        </div>
+        <div class="rounded-2xl bg-obsidian-900 border border-zinc-800 p-3.5">
+          <p class="text-[11px] text-zinc-400">Active Orders</p>
+          <p id="stat-active-orders" class="text-xl font-bold text-gold-400 mt-1">0</p>
+        </div>
+        <div class="rounded-2xl bg-obsidian-900 border border-zinc-800 p-3.5">
+          <p class="text-[11px] text-zinc-400">Pending Due</p>
+          <p id="stat-pending-balance" class="text-base sm:text-lg font-bold text-amber-400 mt-1">₹0</p>
+        </div>
+      </div>
+
+      <!-- Admin Sub-Navigation Tabs (Orders vs Invoice Generator) -->
+      <div class="grid grid-cols-2 gap-2 bg-obsidian-900 p-1.5 rounded-2xl border border-zinc-800 no-print">
+        <button id="tab-admin-orders" onclick="switchAdminTab('orders')"
+          class="py-2.5 rounded-xl text-xs font-bold bg-gold-500 text-obsidian-950 transition flex items-center justify-center gap-1.5">
+          <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+          Order & Shoot Tracker
+        </button>
+        <button id="tab-admin-invoice" onclick="switchAdminTab('invoice')"
+          class="py-2.5 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white transition flex items-center justify-center gap-1.5">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          Invoice Generator
+        </button>
+      </div>
+
+      <!-- ADMIN TAB 1: ORDER & SHOOT TRACKER -->
+      <div id="admin-panel-orders" class="space-y-3 no-print">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Client Bookings & Workflow</h3>
+          <button onclick="resetDemoData()" class="text-[11px] text-zinc-500 hover:text-gold-400 underline">
+            Reset Sample Data
+          </button>
+        </div>
+        <div id="admin-orders-list" class="space-y-3.5">
+          <!-- Orders populated via JavaScript -->
+        </div>
+      </div>
+
+      <!-- ADMIN TAB 2: INSTANT INVOICE / BILL GENERATOR -->
+      <div id="admin-panel-invoice" class="hidden space-y-4">
+        <!-- Order Selector & Custom Overrides -->
+        <div class="rounded-2xl bg-obsidian-900 border border-zinc-800 p-4 space-y-3 no-print">
+          <label class="block text-xs font-semibold text-gold-400">Load Client Order into Bill</label>
+          <select id="invoice-order-select" onchange="loadOrderIntoInvoice(this.value)"
+            class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold-500">
+            <option value="">-- Select an existing booking --</option>
+          </select>
+
+          <div class="grid grid-cols-2 gap-2.5 pt-1">
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">Client Name</label>
+              <input type="text" id="inv-input-name" oninput="syncInvoicePreview()" placeholder="Client Name"
+                class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3 py-2 text-xs text-white" />
+            </div>
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">Client Phone</label>
+              <input type="tel" id="inv-input-phone" oninput="syncInvoicePreview()" placeholder="Phone Number"
+                class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3 py-2 text-xs text-white" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">Service / Package</label>
+              <input type="text" id="inv-input-service" oninput="syncInvoicePreview()" placeholder="Service Description"
+                class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3 py-2 text-xs text-white" />
+            </div>
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">Event Date</label>
+              <input type="text" id="inv-input-date" oninput="syncInvoicePreview()" placeholder="DD-MM-YYYY"
+                class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3 py-2 text-xs text-white" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">Total Amount (₹)</label>
+              <input type="number" id="inv-input-total" oninput="syncInvoicePreview()" placeholder="0"
+                class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3 py-2 text-xs text-white" />
+            </div>
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">Advance Paid (₹)</label>
+              <input type="number" id="inv-input-advance" oninput="syncInvoicePreview()" placeholder="0"
+                class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3 py-2 text-xs text-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Printable Luxury Studio Invoice Preview Card -->
+        <div id="printable-invoice-area" class="rounded-3xl bg-white text-zinc-900 p-5 shadow-2xl border-2 border-gold-500/60 space-y-4">
+          <!-- Invoice Header -->
+          <div class="flex items-start justify-between border-b-2 border-zinc-200 pb-3.5">
+            <div>
+              <h3 class="font-display font-extrabold text-base sm:text-lg text-zinc-950 tracking-wide">
+                AURAA CREATIONS & EVENTS
+              </h3>
+              <p class="text-[11px] text-zinc-600 mt-0.5">Southgate, Madurai - 625001</p>
+              <p class="text-[11px] text-zinc-600">Ph: +91 74492 88649</p>
+              <p class="text-[10px] text-zinc-500">auraa.creations2407@gmail.com</p>
+            </div>
+            <div class="text-right">
+              <span class="inline-block px-2.5 py-1 rounded-lg bg-zinc-900 text-gold-400 font-bold text-[10px] tracking-widest uppercase">
+                STUDIO BILL
+              </span>
+              <p id="inv-preview-id" class="text-xs font-bold text-zinc-800 mt-1.5">#INV-2407</p>
+              <p id="inv-preview-issued" class="text-[10px] text-zinc-500"></p>
+            </div>
+          </div>
+
+          <!-- Billed To -->
+          <div class="flex justify-between text-xs bg-zinc-100 rounded-xl p-3">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-zinc-500">Billed To</p>
+              <p id="inv-preview-name" class="font-bold text-zinc-900 text-sm mt-0.5">Select Client</p>
+              <p id="inv-preview-phone" class="text-zinc-600 text-xs">+91 ----------</p>
+            </div>
+            <div class="text-right">
+              <p class="text-[10px] uppercase font-bold text-zinc-500">Event Date</p>
+              <p id="inv-preview-date" class="font-semibold text-zinc-800 mt-0.5">--</p>
+            </div>
+          </div>
+
+          <!-- Itemized Table -->
+          <div>
+            <div class="flex justify-between text-[11px] font-bold uppercase text-zinc-500 border-b border-zinc-200 pb-1.5">
+              <span>Description</span>
+              <span>Amount</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-zinc-100 text-xs">
+              <div>
+                <p id="inv-preview-service" class="font-bold text-zinc-900">Studio Package</p>
+                <p class="text-[11px] text-zinc-500">Photography / Event / Bridal Deliverables</p>
+              </div>
+              <p id="inv-preview-total-row" class="font-bold text-zinc-900">₹0</p>
+            </div>
+          </div>
+
+          <!-- Totals Breakdown -->
+          <div class="space-y-1.5 text-xs pt-1">
+            <div class="flex justify-between text-zinc-600">
+              <span>Package Total</span>
+              <span id="inv-preview-total" class="font-semibold text-zinc-900">₹0</span>
+            </div>
+            <div class="flex justify-between text-emerald-700">
+              <span>Advance Paid</span>
+              <span id="inv-preview-advance" class="font-semibold">- ₹0</span>
+            </div>
+            <div class="flex justify-between items-center border-t-2 border-zinc-900 pt-2 mt-2 text-sm font-extrabold text-zinc-950">
+              <span>Balance Due</span>
+              <span id="inv-preview-balance" class="text-base">₹0</span>
+            </div>
+          </div>
+
+          <!-- Footer Note -->
+          <div class="text-center pt-3 border-t border-dashed border-zinc-300">
+            <p class="text-[11px] font-semibold text-zinc-800">Thank you for choosing Auraa Creations & Events!</p>
+            <p class="text-[10px] text-zinc-500 mt-0.5">Instagram: @auraa_creations_by_aishu</p>
+          </div>
+        </div>
+
+        <!-- Invoice Action Buttons -->
+        <div class="grid grid-cols-2 gap-3 no-print">
+          <button onclick="shareInvoiceWhatsApp()"
+            class="py-3.5 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition">
+            <i data-lucide="share-2" class="w-4 h-4"></i>
+            Share Bill on WhatsApp
+          </button>
+          <button onclick="window.print()"
+            class="py-3.5 px-3 rounded-2xl gold-gradient text-obsidian-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Print / Save PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Mobile Navigation Bar -->
+  <nav id="bottom-nav" class="fixed bottom-0 inset-x-0 z-40 bg-obsidian-950/95 backdrop-blur-md border-t border-zinc-800/90 px-4 py-2 no-print">
+    <div id="nav-client-items" class="max-w-xl mx-auto grid grid-cols-3 gap-1">
+      <button onclick="scrollToSection('top')" class="flex flex-col items-center justify-center py-1.5 text-gold-400">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+        <span class="text-[10px] font-semibold mt-0.5">Studio</span>
+      </button>
+      <button onclick="scrollToSection('section-services')" class="flex flex-col items-center justify-center py-1.5 text-zinc-400 hover:text-gold-400">
+        <i data-lucide="camera" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium mt-0.5">Packages</span>
+      </button>
+      <button onclick="scrollToSection('section-booking')" class="flex flex-col items-center justify-center py-1.5 text-zinc-400 hover:text-gold-400">
+        <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium mt-0.5">Book Now</span>
+      </button>
+    </div>
+
+    <div id="nav-admin-items" class="hidden max-w-xl mx-auto grid grid-cols-3 gap-1">
+      <button onclick="switchAdminTab('orders')" class="flex flex-col items-center justify-center py-1.5 text-gold-400">
+        <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+        <span class="text-[10px] font-semibold mt-0.5">Orders</span>
+      </button>
+      <button onclick="openNewOrderModal()" class="flex flex-col items-center justify-center py-1.5 text-zinc-300 hover:text-gold-400">
+        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium mt-0.5">Add Order</span>
+      </button>
+      <button onclick="switchAdminTab('invoice')" class="flex flex-col items-center justify-center py-1.5 text-zinc-300 hover:text-gold-400">
+        <i data-lucide="file-text" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium mt-0.5">Billing</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 1: ADMIN PIN VERIFICATION MODAL                     -->
+  <!-- ========================================================= -->
+  <div id="modal-pin" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+    <div class="w-full max-w-xs rounded-3xl bg-obsidian-900 border border-gold-500/40 p-6 text-center space-y-4 shadow-2xl">
+      <div class="w-12 h-12 rounded-2xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-gold-400 mx-auto">
+        <i data-lucide="shield-check" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h3 class="font-display text-lg font-bold text-white">Admin Studio Login</h3>
+        <p class="text-xs text-zinc-400 mt-1">Enter 4-digit Studio PIN to manage orders & billing</p>
+        <p class="inline-block mt-2 px-2.5 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/30 text-[11px] text-gold-400 font-medium">
+          Test PIN Hint: 2407
+        </p>
+      </div>
+
+      <input type="password" id="admin-pin-input" maxlength="4" inputmode="numeric" placeholder="••••"
+        onkeyup="if(event.key === 'Enter') verifyAdminPin()"
+        class="w-full text-center tracking-[0.75em] text-2xl font-bold rounded-2xl bg-obsidian-950 border border-zinc-700 py-3 text-gold-400 focus:outline-none focus:border-gold-500" />
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <button onclick="closePinModal()"
+          class="py-2.5 rounded-xl bg-obsidian-800 text-zinc-300 text-xs font-semibold hover:bg-obsidian-700">
+          Cancel
+        </button>
+        <button onclick="verifyAdminPin()"
+          class="py-2.5 rounded-xl gold-gradient text-obsidian-950 text-xs font-bold shadow">
+          Unlock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 2: ADD / EDIT ORDER MODAL (ADMIN)                   -->
+  <!-- ========================================================= -->
+  <div id="modal-new-order" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 no-print">
+    <div class="w-full max-w-md rounded-3xl bg-obsidian-900 border border-zinc-700 p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <h3 id="order-modal-title" class="font-display text-base font-bold text-gold-400">Add Studio Order</h3>
+        <button onclick="closeOrderModal()" class="p-1.5 rounded-lg bg-obsidian-800 text-zinc-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="admin-order-form" onsubmit="saveAdminOrder(event)" class="space-y-3">
+        <input type="hidden" id="edit-order-id" />
+        <div>
+          <label class="block text-xs text-zinc-400 mb-1">Client Name *</label>
+          <input type="text" id="ord-name" required placeholder="e.g. Meena & Arjun"
+            class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3.5 py-2.5 text-sm text-white" />
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-xs text-zinc-400 mb-1">Phone Number *</label>
+            <input type="tel" id="ord-phone" required placeholder="9876543210"
+              class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3.5 py-2.5 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs text-zinc-400 mb-1">Event Date *</label>
+            <input type="date" id="ord-date" required
+              class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3.5 py-2.5 text-sm text-white" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-zinc-400 mb-1">Service / Package *</label>
+          <input type="text" id="ord-service" required placeholder="e.g. Full Wedding Candid + Album"
+            class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3.5 py-2.5 text-sm text-white" />
+        </div>
+        <div>
+          <label class="block text-xs text-zinc-400 mb-1">Venue / Location</label>
+          <input type="text" id="ord-location" placeholder="e.g. Madurai"
+            class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3.5 py-2.5 text-sm text-white" />
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Total (₹) *</label>
+            <input type="number" id="ord-total" required min="0" value="25000"
+              class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3 py-2.5 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Advance (₹) *</label>
+            <input type="number" id="ord-advance" required min="0" value="10000"
+              class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-3 py-2.5 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Status</label>
+            <select id="ord-status"
+              class="w-full rounded-xl bg-obsidian-950 border border-zinc-700 px-2 py-2.5 text-xs text-white">
+              <option value="Booked">Booked</option>
+              <option value="Shoot Done">Shoot Done</option>
+              <option value="Editing">Editing</option>
+              <option value="Album Printing">Album Printing</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit"
+          class="w-full py-3 rounded-2xl gold-gradient text-obsidian-950 font-bold text-sm mt-2 shadow-lg">
+          Save Studio Order
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Banner -->
+  <div id="toast-box" class="fixed top-16 inset-x-4 z-50 max-w-sm mx-auto pointer-events-none opacity-0 transition-all duration-300 translate-y-[-10px] no-print">
+    <div class="rounded-2xl bg-obsidian-800 border border-gold-500/60 px-4 py-3 shadow-2xl flex items-center gap-2.5">
+      <i data-lucide="check-circle-2" class="w-5 h-5 text-gold-400 shrink-0"></i>
+      <p id="toast-message" class="text-xs font-medium text-white">Action completed</p>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================
+    // 1. STUDIO CATALOG DATA & WORKFLOW CONSTANTS
+    // =========================================================
+    const STUDIO_PIN = '2407';
+    const STORAGE_KEY = 'auraa_studio_orders_v1';
+    const WORKFLOW_STAGES = ['Booked', 'Shoot Done', 'Editing', 'Album Printing', 'Delivered'];
+
+    const STUDIO_PACKAGES = [
+      {
+        id: 'pkg-1',
+        category: 'Wedding & Candid',
+        title: 'Royal Wedding & Candid Cinema',
+        price: '₹35,000 onwards',
+        badge: 'Most Popular',
+        deliverables: [
+          'Traditional + Candid Photography & 4K Highlights',
+          '30-Sheet Luxury Synthetic Photo Album + Mini Book',
+          'Complimentary Couple Outdoor Pre/Post-Wedding Session'
+        ]
+      },
+      {
+        id: 'pkg-2',
+        category: 'Wedding & Candid',
+        title: 'Engagement & Reception Special',
+        price: '₹18,000 onwards',
+        badge: 'Value Pack',
+        deliverables: [
+          'Full Event HD Photography & Cinematic Reel',
+          '20-Sheet Premium Matte Finish Album',
+          'All High-Resolution Edited Soft Copies'
+        ]
+      },
+      {
+        id: 'pkg-3',
+        category: 'Events & Decor',
+        title: 'Bespoke Stage & Event Decor',
+        price: '₹15,000 onwards',
+        badge: 'Custom Theme',
+        deliverables: [
+          'Floral & LED Backdrop Design for Weddings / Birthdays',
+          'Entrance Arch, Welcome Board & Ambient Lighting',
+          'Complete On-Site Setup & Coordination in Madurai'
+        ]
+      },
+      {
+        id: 'pkg-4',
+        category: 'Baby & Outdoor Shoot',
+        title: 'Kids, Maternity & Outdoor Portrait',
+        price: '₹6,500 onwards',
+        badge: '2-Hour Session',
+        deliverables: [
+          '25+ Retouched High-Resolution Portraits',
+          '2 Creative Props / Costume Changes',
+          '12x18 Laminated Wall Frame Included'
+        ]
+      },
+      {
+        id: 'pkg-5',
+        category: 'Aari & Bridal Works',
+        title: 'Bridal Aari & Maggam Blouse Artistry',
+        price: '₹3,500 onwards',
+        badge: 'Handcrafted',
+        deliverables: [
+          'Intricate Zardosi, Stone, Cutdana & Bead Embroidery',
+          'Custom Bridal Motif & Sleeve Designing',
+          'Express Delivery Available for Wedding Dates'
+        ]
+      }
+    ];
+
+    const DEFAULT_ORDERS = [
+      {
+        id: 'ORD-101',
+        name: 'Praveen & Divya',
+        phone: '9842155410',
+        date: '2026-11-22',
+        service: 'Royal Wedding & Candid Cinema',
+        location: 'Tamukkam Convention, Madurai',
+        total: 45000,
+        advance: 25000,
+        status: 'Booked'
+      },
+      {
+        id: 'ORD-102',
+        name: 'Aishwarya S.',
+        phone: '9789044321',
+        date: '2026-11-15',
+        service: 'Bridal Aari & Maggam Blouse Work',
+        location: 'Southgate, Madurai',
+        total: 6500,
+        advance: 4000,
+        status: 'Editing'
+      },
+      {
+        id: 'ORD-103',
+        name: 'Vignesh & Kavya',
+        phone: '9003188765',
+        date: '2026-10-28',
+        service: 'Engagement & Stage Decor Combo',
+        location: 'Anna Nagar, Madurai',
+        total: 32000,
+        advance: 20000,
+        status: 'Album Printing'
+      }
+    ];
+
+    let orders = [];
+    let isAdminUnlocked = false;
+    let activeCategory = 'All';
+
+    // =========================================================
+    // 2. INITIALIZATION & LOCAL STORAGE HELPERS
+    // =========================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadOrders();
+      renderPackages();
+      renderAdminDashboard();
+      lucide.createIcons();
+
+      // Set default date in invoice preview
+      document.getElementById('inv-preview-issued').textContent =
+        'Issued: ' + new Date().toLocaleDateString('en-IN');
+    });
+
+    function loadOrders() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          orders = JSON.parse(raw);
+        } else {
+          orders = [...DEFAULT_ORDERS];
+          saveOrders();
+        }
+      } catch (e) {
+        orders = [...DEFAULT_ORDERS];
+      }
+    }
+
+    function saveOrders() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+      } catch (e) {
+        console.error('Storage failed', e);
+      }
+    }
+
+    function resetDemoData() {
+      orders = [...DEFAULT_ORDERS];
+      saveOrders();
+      renderAdminDashboard();
+      showToast('Sample studio orders restored');
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toast-box');
+      const text = document.getElementById('toast-message');
+      text.textContent = msg;
+      box.classList.remove('opacity-0', 'translate-y-[-10px]');
+      box.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        box.classList.add('opacity-0', 'translate-y-[-10px]');
+        box.classList.remove('opacity-100', 'translate-y-0');
+      }, 2800);
+    }
+
+    // =========================================================
+    // 3. CLIENT PORTAL LOGIC
+    // =========================================================
+    function filterPackages(category) {
+      activeCategory = category;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.dataset.cat === category) {
+          btn.className = 'cat-pill shrink-0 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gold-500 text-obsidian-950 transition';
+        } else {
+          btn.className = 'cat-pill shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium bg-obsidian-800 text-zinc-300 border border-zinc-700/70 transition';
+        }
+      });
+      renderPackages();
+    }
+
+    function renderPackages() {
+      const container = document.getElementById('packages-container');
+      const filtered = activeCategory === 'All'
+        ? STUDIO_PACKAGES
+        : STUDIO_PACKAGES.filter(p => p.category === activeCategory);
+
+      container.innerHTML = filtered.map(pkg => `
+        <div class="rounded-2xl bg-obsidian-900 border border-zinc-800/90 p-4 space-y-3 hover:border-gold-500/40 transition">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="text-[10px] uppercase tracking-wider font-semibold text-gold-400">${pkg.category}</span>
+              <h4 class="font-bold text-sm sm:text-base text-white mt-0.5">${pkg.title}</h4>
+            </div>
+            <span class="shrink-0 px-2.5 py-1 rounded-lg bg-gold-500/15 border border-gold-500/30 text-gold-300 text-[11px] font-bold">
+              ${pkg.price}
+            </span>
+          </div>
+          <ul class="space-y-1.5">
+            ${pkg.deliverables.map(item => `
+              <li class="flex items-start gap-2 text-xs text-zinc-300">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-gold-400 shrink-0 mt-0.5"></i>
+                <span>${item}</span>
+              </li>
+            `).join('')}
+          </ul>
+          <div class="pt-1 flex justify-end">
+            <button onclick="selectPackageForBooking('${pkg.title.replace(/'/g, "\\'")}')"
+              class="px-3.5 py-2 rounded-xl bg-obsidian-800 hover:bg-gold-500 hover:text-obsidian-950 text-gold-400 border border-gold-500/30 text-xs font-semibold transition flex items-center gap-1.5">
+              Select Package <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function selectPackageForBooking(title) {
+      const select = document.getElementById('book-service');
+      // Add option dynamically if not already in list
+      let exists = false;
+      for (let opt of select.options) {
+        if (opt.value === title) {
+          exists = true;
+          break;
+        }
+      }
+      if (!exists) {
+        const opt = document.createElement('option');
+        opt.value = title;
+        opt.textContent = title;
+        select.appendChild(opt);
+      }
+      select.value = title;
+      scrollToSection('section-booking');
+      showToast('Package selected! Fill details below');
+    }
+
+    function handleClientBooking(e) {
+      e.preventDefault();
+      const name = document.getElementById('book-name').value.trim();
+      const phone = document.getElementById('book-phone').value.trim();
+      const date = document.getElementById('book-date').value;
+      const service = document.getElementById('book-service').value;
+      const location = document.getElementById('book-location').value.trim();
+
+      // Save inquiry into Admin Studio Manager list automatically
+      const newBooking = {
+        id: 'ORD-' + Math.floor(100 + Math.random() * 900),
+        name,
+        phone,
+        date,
+        service,
+        location,
+        total: 0,
+        advance: 0,
+        status: 'Booked'
+      };
+      orders.unshift(newBooking);
+      saveOrders();
+      renderAdminDashboard();
+
+      // Format clean WhatsApp message to 917449288649
+      const message =
+        `Hello *AURAA CREATIONS & EVENTS*! ✨%0A%0A` +
+        `I would like to book a session/event:%0A` +
+        `• *Name:* ${encodeURIComponent(name)}%0A` +
+        `• *Phone:* ${encodeURIComponent(phone)}%0A` +
+        `• *Service:* ${encodeURIComponent(service)}%0A` +
+        `• *Date:* ${encodeURIComponent(date)}%0A` +
+        `• *Venue:* ${encodeURIComponent(location)}%0A%0A` +
+        `Please share availability and package details.`;
+
+      const waUrl = `https://wa.me/917449288649?text=${message}`;
+      showToast('Booking saved! Opening WhatsApp...');
+      document.getElementById('client-booking-form').reset();
+
+      setTimeout(() => {
+        window.open(waUrl, '_blank', 'noopener');
+      }, 400);
+    }
+
+    function scrollToSection(id) {
+      if (id === 'top') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // =========================================================
+    // 4. MODE SWITCHING & PIN AUTHENTICATION
+    // =========================================================
+    function requestAdminAccess() {
+      if (isAdminUnlocked) {
+        switchAppMode('admin');
+        return;
+      }
+      document.getElementById('admin-pin-input').value = '';
+      document.getElementById('modal-pin').classList.remove('hidden');
+      setTimeout(() => document.getElementById('admin-pin-input').focus(), 100);
+    }
+
+    function closePinModal() {
+      document.getElementById('modal-pin').classList.add('hidden');
+    }
+
+    function verifyAdminPin() {
+      const entered = document.getElementById('admin-pin-input').value.trim();
+      if (entered === STUDIO_PIN) {
+        isAdminUnlocked = true;
+        closePinModal();
+        switchAppMode('admin');
+        showToast('Admin Studio Manager Unlocked');
+      } else {
+        showToast('Incorrect PIN! Hint: 2407');
+        document.getElementById('admin-pin-input').value = '';
+      }
+    }
+
+    function lockAdminMode() {
+      isAdminUnlocked = false;
+      switchAppMode('client');
+      showToast('Admin Mode Locked');
+    }
+
+    function switchAppMode(mode) {
+      const clientView = document.getElementById('view-client');
+      const adminView = document.getElementById('view-admin');
+      const btnClient = document.getElementById('btn-mode-client');
+      const btnAdmin = document.getElementById('btn-mode-admin');
+      const navClient = document.getElementById('nav-client-items');
+      const navAdmin = document.getElementById('nav-admin-items');
+      const lockIcon = document.getElementById('admin-lock-icon');
+
+      if (mode === 'admin') {
+        clientView.classList.add('hidden');
+        adminView.classList.remove('hidden');
+        navClient.classList.add('hidden');
+        navAdmin.classList.remove('hidden');
+
+        btnAdmin.className = 'px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-gold-500 text-obsidian-950 shadow flex items-center gap-1';
+        btnClient.className = 'px-3 py-1.5 rounded-full text-xs font-semibold transition-all text-zinc-300 hover:text-white';
+        if (lockIcon) lockIcon.setAttribute('data-lucide', 'unlock');
+        renderAdminDashboard();
+      } else {
+        adminView.classList.add('hidden');
+        clientView.classList.remove('hidden');
+        navAdmin.classList.add('hidden');
+        navClient.classList.remove('hidden');
+
+        btnClient.className = 'px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-gold-500 text-obsidian-950 shadow';
+        btnAdmin.className = 'px-3 py-1.5 rounded-full text-xs font-semibold transition-all text-zinc-300 hover:text-white flex items-center gap-1';
+        if (lockIcon) lockIcon.setAttribute('data-lucide', 'lock');
+      }
+      lucide.createIcons();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================
+    // 5. ADMIN STUDIO MANAGER & WORKFLOW TRACKER
+    // =========================================================
+    function switchAdminTab(tab) {
+      const ordersPanel = document.getElementById('admin-panel-orders');
+      const invoicePanel = document.getElementById('admin-panel-invoice');
+      const tabOrders = document.getElementById('tab-admin-orders');
+      const tabInvoice = document.getElementById('tab-admin-invoice');
+
+      if (tab === 'invoice') {
+        ordersPanel.classList.add('hidden');
+        invoicePanel.classList.remove('hidden');
+        tabInvoice.className = 'py-2.5 rounded-xl text-xs font-bold bg-gold-500 text-obsidian-950 transition flex items-center justify-center gap-1.5';
+        tabOrders.className = 'py-2.5 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white transition flex items-center justify-center gap-1.5';
+        populateInvoiceOrderDropdown();
+      } else {
+        invoicePanel.classList.add('hidden');
+        ordersPanel.classList.remove('hidden');
+        tabOrders.className = 'py-2.5 rounded-xl text-xs font-bold bg-gold-500 text-obsidian-950 transition flex items-center justify-center gap-1.5';
+        tabInvoice.className = 'py-2.5 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white transition flex items-center justify-center gap-1.5';
+      }
+      lucide.createIcons();
+    }
+
+    function renderAdminDashboard() {
+      // Update KPI Stats
+      const totalBookings = orders.length;
+      const activeOrders = orders.filter(o => o.status !== 'Delivered').length;
+      const pendingBalance = orders.reduce((sum, o) => sum + Math.max(0, (Number(o.total) || 0) - (Number(o.advance) || 0)), 0);
+
+      document.getElementById('stat-total-bookings').textContent = totalBookings;
+      document.getElementById('stat-active-orders').textContent = activeOrders;
+      document.getElementById('stat-pending-balance').textContent = '₹' + pendingBalance.toLocaleString('en-IN');
+
+      // Render Orders List
+      const listEl = document.getElementById('admin-orders-list');
+      if (orders.length === 0) {
+        listEl.innerHTML = `<div class="rounded-2xl bg-obsidian-900 border border-zinc-800 p-8 text-center text-xs text-zinc-400">No bookings yet. Tap "+ New Order" to add one.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = orders.map(order => {
+        const total = Number(order.total) || 0;
+        const advance = Number(order.advance) || 0;
+        const balance = Math.max(0, total - advance);
+        const stageIdx = WORKFLOW_STAGES.indexOf(order.status);
+
+        return `
+          <div class="rounded-2xl bg-obsidian-900 border border-zinc-800 p-4 space-y-3">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-obsidian-800 text-gold-400 border border-gold-500/20">${order.id}</span>
+                  <span class="text-xs text-zinc-400">${order.date || 'Date TBD'}</span>
+                </div>
+                <h4 class="font-bold text-sm text-white mt-1">${order.name}</h4>
+                <p class="text-xs text-zinc-400">${order.service}</p>
+                <p class="text-[11px] text-zinc-500 mt-0.5">${order.location || 'Madurai'} • ${order.phone}</p>
+              </div>
+              <div class="flex items-center gap-1">
+                <button onclick="openEditOrderModal('${order.id}')" title="Edit Order"
+                  class="p-2 rounded-xl bg-obsidian-800 text-zinc-300 hover:text-gold-400">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="generateBillForOrder('${order.id}')" title="Generate Bill"
+                  class="p-2 rounded-xl bg-gold-500/15 text-gold-400 hover:bg-gold-500 hover:text-obsidian-950">
+                  <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Payment Summary Bar -->
+            <div class="grid grid-cols-3 gap-2 rounded-xl bg-obsidian-950 p-2.5 text-center border border-zinc-800/80">
+              <div>
+                <p class="text-[10px] text-zinc-500">Total</p>
+                <p class="text-xs font-bold text-white">₹${total.toLocaleString('en-IN')}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-zinc-500">Advance</p>
+                <p class="text-xs font-bold text-emerald-400">₹${advance.toLocaleString('en-IN')}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-zinc-500">Balance</p>
+                <p class="text-xs font-bold ${balance > 0 ? 'text-amber-400' : 'text-emerald-400'}">
+                  ${balance > 0 ? '₹' + balance.toLocaleString('en-IN') : 'PAID'}
+                </p>
+              </div>
+            </div>
+
+            <!-- Workflow Stage Selector -->
+            <div class="flex items-center justify-between gap-2 pt-1">
+              <label class="text-[11px] text-zinc-400">Status:</label>
+              <select onchange="updateOrderStatus('${order.id}', this.value)"
+                class="flex-1 rounded-xl bg-obsidian-800 border border-zinc-700 px-3 py-1.5 text-xs font-semibold text-gold-300 focus:outline-none focus:border-gold-500">
+                ${WORKFLOW_STAGES.map(st => `
+                  <option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>
+                `).join('')}
+              </select>
+              ${balance > 0 ? `
+                <button onclick="markOrderPaid('${order.id}')"
+                  class="px-2.5 py-1.5 rounded-xl bg-emerald-950 border border-emerald-700/60 text-emerald-300 text-[11px] font-semibold hover:bg-emerald-900">
+                  Mark Paid
+                </button>
+              ` : ''}
+            </div>
+
+            <!-- Visual Progress Steps -->
+            <div class="grid grid-cols-5 gap-1 pt-0.5">
+              ${WORKFLOW_STAGES.map((_, idx) => `
+                <div class="h-1.5 rounded-full ${idx <= stageIdx ? 'bg-gold-500' : 'bg-zinc-800'}"></div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      populateInvoiceOrderDropdown();
+      lucide.createIcons();
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const idx = orders.findIndex(o => o.id === orderId);
+      if (idx !== -1) {
+        orders[idx].status = newStatus;
+        saveOrders();
+        renderAdminDashboard();
+        showToast(`Status updated to "${newStatus}"`);
+      }
+    }
+
+    function markOrderPaid(orderId) {
+      const idx = orders.findIndex(o => o.id === orderId);
+      if (idx !== -1) {
+        orders[idx].advance = orders[idx].total;
+        saveOrders();
+        renderAdminDashboard();
+        showToast('Full payment recorded!');
+      }
+    }
+
+    // Add / Edit Order Modal Functions
+    function openNewOrderModal() {
+      document.getElementById('order-modal-title').textContent = 'Add Studio Order';
+      document.getElementById('edit-order-id').value = '';
+      document.getElementById('admin-order-form').reset();
+      document.getElementById('modal-new-order').classList.remove('hidden');
+    }
+
+    function openEditOrderModal(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+      document.getElementById('order-modal-title').textContent = 'Edit Order • ' + order.id;
+      document.getElementById('edit-order-id').value = order.id;
+      document.getElementById('ord-name').value = order.name;
+      document.getElementById('ord-phone').value = order.phone;
+      document.getElementById('ord-date').value = order.date;
+      document.getElementById('ord-service').value = order.service;
+      document.getElementById('ord-location').value = order.location;
+      document.getElementById('ord-total').value = order.total;
+      document.getElementById('ord-advance').value = order.advance;
+      document.getElementById('ord-status').value = order.status;
+      document.getElementById('modal-new-order').classList.remove('hidden');
+    }
+
+    function closeOrderModal() {
+      document.getElementById('modal-new-order').classList.add('hidden');
+    }
+
+    function saveAdminOrder(e) {
+      e.preventDefault();
+      const editId = document.getElementById('edit-order-id').value;
+      const orderData = {
+        id: editId || 'ORD-' + Math.floor(100 + Math.random() * 900),
+        name: document.getElementById('ord-name').value.trim(),
+        phone: document.getElementById('ord-phone').value.trim(),
+        date: document.getElementById('ord-date').value,
+        service: document.getElementById('ord-service').value.trim(),
+        location: document.getElementById('ord-location').value.trim(),
+        total: Number(document.getElementById('ord-total').value) || 0,
+        advance: Number(document.getElementById('ord-advance').value) || 0,
+        status: document.getElementById('ord-status').value
+      };
+
+      if (editId) {
+        const idx = orders.findIndex(o => o.id === editId);
+        if (idx !== -1) orders[idx] = orderData;
+        showToast('Order updated!');
+      } else {
+        orders.unshift(orderData);
+        showToast('New order added!');
+      }
+
+      saveOrders();
+      closeOrderModal();
+      renderAdminDashboard();
+    }
+
+    // =========================================================
+    // 6. INSTANT INVOICE / BILL GENERATOR
+    // =========================================================
+    function populateInvoiceOrderDropdown() {
+      const sel = document.getElementById('invoice-order-select');
+      const currentVal = sel.value;
+      sel.innerHTML = '<option value="">-- Select an existing booking --</option>' +
+        orders.map(o => `<option value="${o.id}">${o.id} • ${o.name} (${o.service})</option>`).join('');
+      if (currentVal) sel.value = currentVal;
+    }
+
+    function generateBillForOrder(orderId) {
+      switchAdminTab('invoice');
+      document.getElementById('invoice-order-select').value = orderId;
+      loadOrderIntoInvoice(orderId);
+    }
+
+    function loadOrderIntoInvoice(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      document.getElementById('inv-preview-id').textContent = '#INV-' + order.id.replace('ORD-', '');
+      document.getElementById('inv-input-name').value = order.name;
+      document.getElementById('inv-input-phone').value = order.phone;
+      document.getElementById('inv-input-service').value = order.service;
+      document.getElementById('inv-input-date').value = order.date;
+      document.getElementById('inv-input-total').value = order.total;
+      document.getElementById('inv-input-advance').value = order.advance;
+      syncInvoicePreview();
+    }
+
+    function syncInvoicePreview() {
+      const name = document.getElementById('inv-input-name').value || 'Client Name';
+      const phone = document.getElementById('inv-input-phone').value || '--';
+      const service = document.getElementById('inv-input-service').value || 'Studio Package';
+      const date = document.getElementById('inv-input-date').value || '--';
+      const total = Number(document.getElementById('inv-input-total').value) || 0;
+      const advance = Number(document.getElementById('inv-input-advance').value) || 0;
+      const balance = Math.max(0, total - advance);
+
+      document.getElementById('inv-preview-name').textContent = name;
+      document.getElementById('inv-preview-phone').textContent = phone;
+      document.getElementById('inv-preview-service').textContent = service;
+      document.getElementById('inv-preview-date').textContent = date;
+      document.getElementById('inv-preview-total-row').textContent = '₹' + total.toLocaleString('en-IN');
+      document.getElementById('inv-preview-total').textContent = '₹' + total.toLocaleString('en-IN');
+      document.getElementById('inv-preview-advance').textContent = '- ₹' + advance.toLocaleString('en-IN');
+      document.getElementById('inv-preview-balance').textContent = '₹' + balance.toLocaleString('en-IN');
+    }
+
+    function shareInvoiceWhatsApp() {
+      const invId = document.getElementById('inv-preview-id').textContent;
+      const name = document.getElementById('inv-input-name').value.trim() || 'Valued Client';
+      const rawPhone = document.getElementById('inv-input-phone').value.replace(/\D/g, '');
+      const service = document.getElementById('inv-input-service').value.trim() || 'Studio Package';
+      const date = document.getElementById('inv-input-date').value.trim() || '--';
+      const total = Number(document.getElementById('inv-input-total').value) || 0;
+      const advance = Number(document.getElementById('inv-input-advance').value) || 0;
+      const balance = Math.max(0, total - advance);
+
+      const billText =
+        `*AURAA CREATIONS & EVENTS* ✨%0A` +
+        `Southgate, Madurai - 625001%0A` +
+        `--------------------------------%0A` +
+        `*INVOICE:* ${encodeURIComponent(invId)}%0A` +
+        `*Client:* ${encodeURIComponent(name)}%0A` +
+        `*Event Date:* ${encodeURIComponent(date)}%0A` +
+        `*Service:* ${encodeURIComponent(service)}%0A` +
+        `--------------------------------%0A` +
+        `*Total Amount:* ₹${total.toLocaleString('en-IN')}%0A` +
+        `*Advance Paid:* ₹${advance.toLocaleString('en-IN')}%0A` +
+        `*Balance Due:* ₹${balance.toLocaleString('en-IN')}%0A` +
+        `--------------------------------%0A` +
+        `Thank you for choosing Auraa Creations & Events! 📸%0A` +
+        `Contact: +91 74492 88649`;
+
+      // Send directly to client's phone if 10 digits provided, else open WhatsApp share
+      const targetNumber = rawPhone.length === 10 ? '91' + rawPhone : rawPhone;
+      const url = targetNumber
+        ? `https://wa.me/${targetNumber}?text=${billText}`
+        : `https://wa.me/?text=${billText}`;
+
+      window.open(url, '_blank', 'noopener');
+    }
+  </script>
+</body>
+</html>
