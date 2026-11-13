@@ -1,0 +1,25 @@
+{
+  "name": "AURAA CREATIONS & EVENTS",
+  "short_name": "Auraa Studio",
+  "description": "Photography, Events, Return Gifts & Bridal Studio - Southgate, Madurai",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#09090b",
+  "theme_color": "#d4af37",
+  "icons": [
+    {
+      "src": "https://ui-avatars.com/api/?name=A+C&background=d4af37&color=09090b&size=192&bold=true&format=png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://ui-avatars.com/api/?name=A+C&background=d4af37&color=09090b&size=512&bold=true&format=png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
